@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Добро пожаловать</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container" style="text-align: center; max-width: 500px;">
+    <h1>👋 Добро пожаловать</h1>
+    <p style="font-size: 1.2rem; color: #475569; margin: 20px 0;">
+        Система управления пользователями
+    </p>
+
+    <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}" class="btn btn-primary" style="font-size: 1.1rem;">Войти</a>
+    </div>
+
+    <div sec:authorize="isAuthenticated()">
+        <p style="font-size: 1.1rem; color: #1e293b;">
+            Вы вошли как <strong sec:authentication="name"></strong>
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 20px;">
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}" class="btn btn-success" style="width: 200px;">🔧 Админ-панель</a>
+            </div>
+            <div sec:authorize="hasRole('USER')">
+                <a th:href="@{/user}" class="btn btn-primary" style="width: 200px;">👤 Мой профиль</a>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-danger" style="width: 200px;">🚪 Выйти</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

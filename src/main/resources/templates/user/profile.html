@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой профиль</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container" style="max-width: 500px; text-align: center;">
+    <h1>👤 Мой профиль</h1>
+
+    <div style="background: #f8fafc; border-radius: 16px; padding: 24px; margin: 20px 0; text-align: left;">
+        <p><strong>Имя:</strong> <span th:text="${user.name}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+        <p><strong>Роли:</strong>
+            <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+        </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+        <a th:href="@{/}" class="btn btn-primary" style="width: 200px;">🏠 На главную</a>
+        <a th:href="@{/logout}" class="btn btn-danger" style="width: 200px;">🚪 Выйти</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title>Админка - управление пользователями</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Управление пользователями</h1>
+    <a th:href="@{/admin/new}" class="add-btn">Добавить пользователя</a>
+    <a th:href="@{/logout}" class="logout-btn">Выйти</a>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Роли</th>
+            <th>Действия</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+            <td>
+                <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+            </td>
+            <td>
+                <a th:href="@{/admin/edit(id=${user.id})}">Редактировать</a>
+                <a th:href="@{/admin/delete(id=${user.id})}" onclick="return confirm('Удалить?')">Удалить</a>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
