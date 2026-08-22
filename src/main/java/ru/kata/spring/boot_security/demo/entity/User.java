@@ -33,6 +33,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    //Было: fetch = FetchType.LAZY — роли не загружаются сразу, только когда обращаются к user.getRoles().
+    //
+    //При аутентификации: Spring Security вызывает user.getAuthorities(), который возвращает roles.
+    //
+    //Проблема: К этому моменту Hibernate сессия уже закрыта (запрос к БД выполнен, транзакция завершена).
+    //
+    //Результат: Hibernate не может загрузить роли и бросает LazyInitializationException.
+    //
+    //Идея: Есть обход но для этого придётся переписать UserDetailsService, но здесь всего 2 роли
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",

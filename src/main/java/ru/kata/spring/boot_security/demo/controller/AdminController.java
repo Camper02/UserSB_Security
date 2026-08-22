@@ -8,7 +8,6 @@ package ru.kata.spring.boot_security.demo.controller;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +18,11 @@ public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
-    //private final PasswordEncoder passwordEncoder; // для шифровки
 
     public AdminController(UserService userService,
-                           RoleService roleService,
-                           PasswordEncoder passwordEncoder) {
+                           RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        //this.passwordEncoder = passwordEncoder; // для шифровки
     }
 
     @GetMapping
@@ -50,27 +46,15 @@ public class AdminController {
         return "admin/user-form";
     }
 
-    @PostMapping("/save")
-    public String saveUser(@ModelAttribute("user") User user) {
-        if (user.getId() == null) {
-            // Новый пользователь – пароль обязателен
-            if (user.getPassword() == null || user.getPassword().isEmpty()) {
-                return "redirect:/admin/new?error=password_required";
-            }
-            // Шифрование
-            // user.setPassword(passwordEncoder.encode(user.getPassword())); // шифр
-        } else {
-            // Редактирование
-            User existing = userService.getById(user.getId());
-            if (user.getPassword() == null || user.getPassword().isEmpty()) {
-                user.setPassword(existing.getPassword()); // оставляем старый
-            } else {
-                // Новый пароль – сохраняем как есть
-                // user.setPassword(passwordEncoder.encode(user.getPassword())); // шифр
-                user.setPassword(user.getPassword());
-            }
-        }
-        userService.save(user);
+    @PostMapping("/create")
+    public String createUser(@ModelAttribute("user") User user) {
+        userService.createUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/update")
+    public String updateUser(@ModelAttribute("user") User user) {
+        userService.updateUser(user);
         return "redirect:/admin";
     }
 

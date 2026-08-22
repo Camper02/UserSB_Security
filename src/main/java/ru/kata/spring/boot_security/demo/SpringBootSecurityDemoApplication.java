@@ -1,17 +1,16 @@
 package ru.kata.spring.boot_security.demo;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import ru.kata.spring.boot_security.demo.entity.Role;
-import ru.kata.spring.boot_security.demo.entity.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
-import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.context.event.EventListener;
+import ru.kata.spring.boot_security.demo.entity.Role;
+import ru.kata.spring.boot_security.demo.entity.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.awt.*;
 import java.net.URI;
@@ -33,9 +32,8 @@ public class SpringBootSecurityDemoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner init(RoleRepository roleRepository,
-	                              UserRepository userRepository,
-	                              PasswordEncoder passwordEncoder) {
+	public CommandLineRunner init(RoleService roleRepository,
+                                  UserService userRepository) {
 		return args -> {
 			// Создаём роли, если их ещё нет
 			if (roleRepository.count() == 0) {
@@ -49,12 +47,11 @@ public class SpringBootSecurityDemoApplication {
 				User admin = new User();
 				admin.setName("Admin");
 				admin.setEmail("admin@example.com");
-				//admin.setPassword(passwordEncoder.encode("admin")); // шифр
 				admin.setPassword("admin");
 				// Даём все роли
 				Set<Role> allRoles = new HashSet<>(roleRepository.findAll());
 				admin.setRoles(allRoles);
-				userRepository.save(admin);
+				userRepository.createUser(admin);
 			}
 		};
 	}

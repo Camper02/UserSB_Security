@@ -3,6 +3,8 @@
 
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,12 +41,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void save(User user) {
-        // Если пароль передан и не пустой, шифруем его
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void createUser(User user) {
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password is required");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(User user) {
+        User existing = getById(user.getId());
+        existing.setName(user.getName());
+        existing.setEmail(user.getEmail());
+        existing.setRoles(user.getRoles());
+
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existing.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        userRepository.save(existing);
     }
 
     @Override
@@ -54,8 +72,14 @@ public class UserServiceImpl implements UserService {
 
     // Дополнительный метод для поиска по email
     @Transactional(readOnly = true)
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    // НОВЫЙ МЕТОД
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 }

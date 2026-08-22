@@ -33,4 +33,14 @@ public class RoleServiceImpl implements RoleService {
     public Role save(Role role) {
         return roleRepository.save(role);
     }
+
+    @Override
+    public Long count() {
+        return roleRepository.count();
+    }
+
+    @Override
+    public void saveAll(List<Role> adminRole) {
+        roleRepository.saveAll(adminRole);
+    }
 }

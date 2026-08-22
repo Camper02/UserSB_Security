@@ -12,4 +12,8 @@ public interface RoleService {
     List<Role> findAll();
     Optional<Role> findByName(String name);
     Role save(Role role);
+
+    Long count();
+
+    void saveAll(List<Role> adminRole);
 }
